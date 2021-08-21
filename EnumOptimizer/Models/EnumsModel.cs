@@ -4,7 +4,7 @@ namespace EnumOptimizer.Models
 {
     public class EnumsModel
     {
-        public List<string> Namespaces { get; set; }
+        public List<EnumNamespaceModel> Namespaces { get; set; }
         public List<EnumModel> Enums { get; set; }
     }
 }

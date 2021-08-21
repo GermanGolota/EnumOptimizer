@@ -1,4 +1,5 @@
-﻿using Microsoft.CodeAnalysis;
+﻿using EnumOptimizer.Models;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
@@ -8,17 +9,39 @@ namespace EnumOptimizer.Utils
 {
     public static class SyntaxUtils
     {
-        public static string GetNamespaceOrNull(SyntaxNode enumSyntax)
+        public static EnumNamespaceModel GetNamespaceOrNull(SyntaxNode enumSyntax)
         {
-            string result;
-            var parent = TryGetNamespaceParent(enumSyntax);
-            if (parent is NamespaceDeclarationSyntax nameSpace)
+            EnumNamespaceModel result;
+            if (enumSyntax.Parent is NamespaceDeclarationSyntax nameSpace)
             {
-                result = nameSpace.Name.ToString();
+                result = new EnumNamespaceModel
+                {
+                    Namespace = nameSpace.Name.ToString()
+                };
             }
             else
             {
-                result = null;
+                List<string> classNames = new List<string>();
+                SyntaxNode parent = enumSyntax.Parent;
+                while (parent is TypeDeclarationSyntax type && parent.Parent.IsNotNull())
+                {
+                    parent = parent.Parent;
+                    classNames.Add(type.Identifier.Text);
+                }
+                string className = String.Join(".", classNames);
+                var namespaceNode = TryGetNamespaceParent(parent);
+                if (namespaceNode is NamespaceDeclarationSyntax syntax)
+                {
+                    result = new EnumNamespaceModel
+                    {
+                        ClassName = className,
+                        Namespace = syntax.Name.ToString()
+                    };
+                }
+                else
+                {
+                    result = null;
+                }
             }
             return result;
         }
@@ -26,9 +49,16 @@ namespace EnumOptimizer.Utils
         private static SyntaxNode TryGetNamespaceParent(SyntaxNode enumSyntax)
         {
             var parent = enumSyntax.Parent;
-            while (parent.IsNotNull() && parent is NamespaceDeclarationSyntax == false && parent.Parent.IsNotNull())
+            if (enumSyntax is NamespaceDeclarationSyntax)
             {
-                parent = parent.Parent;
+                parent = enumSyntax;
+            }
+            else
+            {
+                while (parent.IsNotNull() && parent is NamespaceDeclarationSyntax == false && parent.Parent.IsNotNull())
+                {
+                    parent = parent.Parent;
+                }
             }
             return parent;
         }

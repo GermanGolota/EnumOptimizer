@@ -39,6 +39,20 @@ namespace EnumOptimizer.Tests.Types
         Image, Video
     }
 }
+",
+                @"
+using System;
+
+namespace EnumOptimizer.Tests.Types
+{
+    public class TestType
+    {
+        public enum Variant
+        {
+            One, Two
+        }
+    }
+}
 "
             };
             Compilation inputCompilation = CreateCompilation(sources);

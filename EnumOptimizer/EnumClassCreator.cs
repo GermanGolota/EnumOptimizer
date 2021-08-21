@@ -16,7 +16,16 @@ namespace EnumOptimizer
             var namespaces = model.Namespaces.Union(GetAdditionalNamespaces());
             foreach (var nameSpace in namespaces)
             {
-                sb.AppendLine($"using {nameSpace};");
+                string line;
+                if (nameSpace.ClassName.IsNotEmpty())
+                {
+                    line = $"using static {nameSpace.Namespace}.{nameSpace.ClassName};";
+                }
+                else
+                {
+                    line = $"using {nameSpace.Namespace};";
+                }
+                sb.AppendLine(line);
             }
             sb.AppendLine();
             sb.AppendLine($"namespace {CLASS_NAMESPACE}");
@@ -51,11 +60,14 @@ namespace EnumOptimizer
         }
 
 
-        private static List<string> GetAdditionalNamespaces()
+        private static List<EnumNamespaceModel> GetAdditionalNamespaces()
         {
-            return new List<string>
+            return new List<EnumNamespaceModel>
             {
-                "System"
+                new EnumNamespaceModel
+                {
+                    Namespace = "System"
+                }
             };
         }
     }
