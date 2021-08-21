@@ -12,11 +12,6 @@ namespace EnumOptimizer
     {
         public static EnumsModel Collect(List<EnumDeclarationSyntax> syntaxes)
         {
-            var namespaces = syntaxes.Select(x => SyntaxUtils.GetNamespaceOrNull(x))
-                   .Where(x => x.IsNotNull())
-                   .Distinct()
-                   .ToList();
-
             List<EnumModel> enums = new List<EnumModel>();
             foreach (var syntax in syntaxes)
             {
@@ -25,15 +20,15 @@ namespace EnumOptimizer
                     EnumName = syntax.Identifier.Text,
                     EnumMembers = syntax.Members
                                 .Select(x => x.Identifier.Text)
-                                .ToList()
+                                .ToList(),
+                    NameSpace = SyntaxUtils.GetNamespaceOrNull(syntax)
                 };
                 enums.Add(model);
             }
 
             return new EnumsModel
             {
-                Enums = enums,
-                Namespaces = namespaces
+                Enums = enums
             };
         }
     }

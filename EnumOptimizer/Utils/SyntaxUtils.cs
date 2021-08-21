@@ -9,15 +9,12 @@ namespace EnumOptimizer.Utils
 {
     public static class SyntaxUtils
     {
-        public static EnumNamespaceModel GetNamespaceOrNull(SyntaxNode enumSyntax)
+        public static string GetNamespaceOrNull(SyntaxNode enumSyntax)
         {
-            EnumNamespaceModel result;
+            string result;
             if (enumSyntax.Parent is NamespaceDeclarationSyntax nameSpace)
             {
-                result = new EnumNamespaceModel
-                {
-                    Namespace = nameSpace.Name.ToString()
-                };
+                result = nameSpace.Name.ToString();
             }
             else
             {
@@ -32,11 +29,7 @@ namespace EnumOptimizer.Utils
                 var namespaceNode = TryGetNamespaceParent(parent);
                 if (namespaceNode is NamespaceDeclarationSyntax syntax)
                 {
-                    result = new EnumNamespaceModel
-                    {
-                        ClassName = className,
-                        Namespace = syntax.Name.ToString()
-                    };
+                    result = $"{syntax.Name.ToString()}.{className}";
                 }
                 else
                 {
