@@ -14,7 +14,7 @@ namespace EnumOptimizer
         {
             StringBuilder sb = new StringBuilder();
             var namespaces = model.Namespaces.Union(GetAdditionalNamespaces());
-            foreach (var nameSpace in model.Namespaces)
+            foreach (var nameSpace in namespaces)
             {
                 sb.AppendLine($"using {nameSpace};");
             }
